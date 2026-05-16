@@ -1,0 +1,49 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Light mode tokens ───────────────────────────────── */
+:root {
+  --bg-main:        #f0f7f4;
+  --bg-card:        #ffffff;
+  --text-primary:   #1a2e1f;
+  --text-secondary: #4a6358;
+  --text-muted:     #8aaa97;
+  --border-muted:   #e2ede9;
+  --border-focus:   #2e8b57;
+}
+
+/* ── Dark mode tokens ────────────────────────────────── */
+[data-theme="dark"] {
+  --bg-main:        #121f17;
+  --bg-card:        #1e3228;
+  --text-primary:   #e8f5ee;
+  --text-secondary: #a8c9b8;
+  --text-muted:     #6b9c82;
+  --border-muted:   #243d2e;
+  --border-focus:   #5ecb8a;
+}
+
+/* ── Global base ─────────────────────────────────────── */
+body {
+  font-family: 'Nunito', Arial, sans-serif;
+  background: var(--bg-main);
+  color: var(--text-primary);
+  margin: 0;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+input, select, textarea {
+  background: var(--bg-main);
+  color: var(--text-primary);
+  border-color: #c8dfd4;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(46, 139, 87, 0.15);
+  background: var(--bg-card);
+}
