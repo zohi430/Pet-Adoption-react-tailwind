@@ -1,47 +1,48 @@
-import { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useRef, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useTheme } from '../../context/ThemeContext';
+import { useAuth }  from '../../context/AuthContext';
 
 export default function Navbar() {
+  const { dark, toggle } = useTheme();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
   const [menuOpen, setMenuOpen] = useState(false);
-  const [dark,     setDark]     = useState(false);
-  const [dropOpen, setDropOpen] = useState(false);
-  const dropRef = useRef<HTMLLIElement>(null);
+  const [accOpen,  setAccOpen]  = useState(false);
+  const accRef = useRef<HTMLLIElement>(null);
 
+  // Close account dropdown on outside click
   useEffect(() => {
-    if (localStorage.getItem('theme') === 'dark') {
-      document.documentElement.setAttribute('data-theme', 'dark');
-      setDark(true);
-    }
-  }, []);
-
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (dropRef.current && !dropRef.current.contains(e.target as Node)) {
-        setDropOpen(false);
+    function onOutside(e: MouseEvent) {
+      if (accRef.current && !accRef.current.contains(e.target as Node)) {
+        setAccOpen(false);
       }
     }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('mousedown', onOutside);
+    return () => document.removeEventListener('mousedown', onOutside);
   }, []);
 
-  function toggleDarkMode() {
-    const html = document.documentElement;
-    if (html.getAttribute('data-theme') === 'dark') {
-      html.removeAttribute('data-theme');
-      localStorage.setItem('theme', 'light');
-      setDark(false);
-    } else {
-      html.setAttribute('data-theme', 'dark');
-      localStorage.setItem('theme', 'dark');
-      setDark(true);
-    }
-  }
+  const close = () => { setMenuOpen(false); setAccOpen(false); };
 
-  const close = () => { setMenuOpen(false); setDropOpen(false); };
+  function handleLogout() {
+    logout();
+    close();
+    navigate('/login');
+  }
 
   const navLink =
     'text-white/90 no-underline font-semibold text-sm px-3 py-1.5 rounded-[6px] ' +
     'transition-all duration-300 hover:bg-white/15 hover:text-white';
+
+  const mainLinks = [
+    ['/',         'Home'   ],
+    ['/pets',     'Pets'   ],
+    ['/about',    'About'  ],
+    ['/contact',  'Contact'],
+    ['/cart',     'Cart'   ],
+    ['/reviews',  'Reviews'],
+  ] as const;
 
   return (
     <nav className="flex flex-wrap justify-between items-center px-8 py-3.5
@@ -80,53 +81,62 @@ export default function Navbar() {
         rounded-[10px] md:rounded-none
       `}>
 
-        {(['/', '/pets', '/about', '/contact'] as const).map((path, i) => {
-          const labels = ['Home', 'Pets', 'About', 'Contact'];
-          return (
-            <li key={path} className="w-full md:w-auto">
-              <Link
-                to={path}
-                onClick={close}
-                className={`${navLink} block md:inline-block px-6 md:px-3 py-3 md:py-1.5 rounded-none md:rounded-[6px]`}
-              >
-                {labels[i]}
-              </Link>
-            </li>
-          );
-        })}
+        {/* Main nav links */}
+        {mainLinks.map(([path, label]) => (
+          <li key={path} className="w-full md:w-auto">
+            <Link
+              to={path}
+              onClick={close}
+              className={`${navLink} block md:inline-block px-6 md:px-3 py-3 md:py-1.5 rounded-none md:rounded-[6px]`}
+            >
+              {label}
+            </Link>
+          </li>
+        ))}
 
         {/* Account dropdown */}
-        <li ref={dropRef} className="relative w-full md:w-auto">
+        <li ref={accRef} className="relative w-full md:w-auto">
           <button
-            onClick={() => setDropOpen(p => !p)}
+            onClick={() => setAccOpen(p => !p)}
             className="w-full md:w-auto text-left mt-0 px-6 md:px-3 py-3 md:py-1.5
                        bg-white/[0.18] border border-white/40 text-white text-sm font-semibold
                        rounded-none md:rounded-[6px] cursor-pointer
                        transition-all duration-300 hover:bg-white/30"
           >
-            Account ▾
+            {user ? `👤 ${user.name.split(' ')[0]}` : 'Account'} ▾
           </button>
 
-          {dropOpen && (
+          {accOpen && (
             <div className="md:absolute static top-[calc(100%+8px)] left-0
                             bg-card border border-border-token rounded-[10px]
                             min-w-[160px] z-[999] flex flex-col py-1.5 shadow-lg">
+
+              {/* Always visible */}
               {[
-                { to: '/login',     label: 'Login'     },
-                { to: '/signup',    label: 'Sign Up'   },
                 { to: '/dashboard', label: 'Dashboard' },
+                { to: '/profile',   label: 'Profile'   },
+                { to: '/login',     label: 'Login'     },
+                { to: '/register',  label: 'Register'  },
+                { to: '/signup',    label: 'Sign Up'   },
               ].map(({ to, label }) => (
-                <Link
-                  key={to}
-                  to={to}
-                  onClick={close}
+                <Link key={to} to={to} onClick={close}
                   className="block px-4 py-2 text-sm no-underline text-primary
-                             transition-colors duration-300
-                             hover:bg-main hover:text-brand-primary"
-                >
+                             transition-colors duration-300 hover:bg-main hover:text-brand-primary">
                   {label}
                 </Link>
               ))}
+
+              {/* Logout only when logged in */}
+              {user && (
+                <button
+                  onClick={handleLogout}
+                  className="text-left px-4 py-2 text-sm text-brand-accent font-semibold
+                             bg-transparent border-none cursor-pointer
+                             transition-colors duration-300 hover:bg-main"
+                >
+                  Logout
+                </button>
+              )}
             </div>
           )}
         </li>
@@ -134,7 +144,7 @@ export default function Navbar() {
         {/* Dark mode toggle */}
         <li className="w-full md:w-auto px-3 md:px-0 py-2 md:py-0">
           <button
-            onClick={toggleDarkMode}
+            onClick={toggle}
             className="mt-0 px-4 py-1.5 text-sm rounded-[6px]
                        border border-white/40 text-white bg-white/[0.18]
                        hover:bg-white/30 transition-all duration-300

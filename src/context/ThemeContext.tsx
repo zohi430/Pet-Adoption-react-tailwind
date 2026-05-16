@@ -8,12 +8,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [dark, setDark] = useState(() => localStorage.getItem('theme') === 'dark');
 
   useEffect(() => {
-    const root = document.documentElement;
+    const html = document.documentElement;
     if (dark) {
-      root.classList.add('dark');
+      html.setAttribute('data-theme', 'dark');
       localStorage.setItem('theme', 'dark');
     } else {
-      root.classList.remove('dark');
+      html.removeAttribute('data-theme');
       localStorage.setItem('theme', 'light');
     }
   }, [dark]);

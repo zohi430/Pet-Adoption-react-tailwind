@@ -1,17 +1,30 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import type { User } from '../../context/AuthContext';
 import FormField from '../../components/ui/FormField';
 
 export default function Login() {
   const [email,    setEmail]    = useState('');
   const [password, setPassword] = useState('');
-  const navigate = useNavigate();
+  const { login } = useAuth();
+  const navigate  = useNavigate();
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (!email || !password) { alert('Please fill all login fields.'); return; }
-    alert('Login Successful!');
+
+    const user: User = {
+      name:     email.split('@')[0].replace(/[._]/g, ' ')
+                     .replace(/\b\w/g, c => c.toUpperCase()),
+      email,
+      phone:    '+1 (555) 000-0000',
+      location: 'New York, USA',
+      avatar:   `https://i.pravatar.cc/150?u=${encodeURIComponent(email)}`,
+      joined:   new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long' }),
+    };
+    login(user);
     navigate('/dashboard');
   }
 
@@ -21,10 +34,13 @@ export default function Login() {
                       bg-card border border-border-token shadow-lg
                       max-sm:px-5 max-sm:py-6 max-sm:mx-4 max-sm:my-5">
 
-        <h2 className="text-2xl font-bold mb-2 text-primary">Welcome Back</h2>
-        <p className="text-sm leading-relaxed my-1 text-secondary">
-          Login to access your dashboard and adoption applications.
-        </p>
+        <div className="text-center mb-6">
+          <div className="text-5xl mb-3">🐾</div>
+          <h2 className="text-2xl font-bold text-primary">Welcome Back</h2>
+          <p className="text-sm leading-relaxed mt-1 text-secondary">
+            Login to access your dashboard and adoption applications.
+          </p>
+        </div>
 
         <form onSubmit={handleSubmit}>
           <FormField id="login-email"    label="Email Address" type="email"    placeholder="you@example.com"     value={email}    onChange={e => setEmail(e.target.value)}    />
@@ -32,7 +48,7 @@ export default function Login() {
 
           <button
             type="submit"
-            className="inline-block px-5 py-2.5 mt-3 rounded-[6px] font-bold text-sm
+            className="w-full py-2.5 mt-3 rounded-[6px] font-bold text-sm
                        text-white bg-brand-primary cursor-pointer border-none tracking-wide
                        transition-all duration-300
                        hover:bg-brand-secondary hover:-translate-y-0.5 hover:shadow-md"
@@ -41,11 +57,11 @@ export default function Login() {
           </button>
         </form>
 
-        <p className="text-sm leading-relaxed mt-4 text-secondary">
+        <p className="text-sm leading-relaxed mt-4 text-center text-secondary">
           Don't have an account?{' '}
-          <Link to="/signup"
+          <Link to="/register"
             className="font-bold text-brand-primary transition-colors duration-300 hover:text-brand-accent">
-            Sign Up
+            Register
           </Link>
         </p>
       </div>

@@ -3,10 +3,10 @@ import InfoCard from '../../components/ui/InfoCard';
 interface Application { id: string; pet: string; species: string; date: string; status: string; }
 interface SavedPet    { name: string; breed: string; age: string; location: string; }
 
-function statusClass(status: string) {
-  if (status === 'Approved') return 'text-brand-primary font-bold';
-  if (status === 'Pending')  return 'text-brand-fourth  font-bold';
-  if (status === 'Rejected') return 'text-brand-accent  font-bold';
+function statusClass(s: string) {
+  if (s === 'Approved') return 'text-brand-primary font-bold';
+  if (s === 'Pending')  return 'text-brand-fourth  font-bold';
+  if (s === 'Rejected') return 'text-brand-accent  font-bold';
   return '';
 }
 
@@ -37,34 +37,34 @@ function TrAlt({ children, even }: { children: React.ReactNode; even: boolean })
   );
 }
 
+const applications: Application[] = [
+  { id: '#1021', pet: 'Buddy', species: 'Dog',    date: '2026-04-10', status: 'Approved' },
+  { id: '#1022', pet: 'Luna',  species: 'Cat',    date: '2026-04-18', status: 'Approved' },
+  { id: '#1031', pet: 'Max',   species: 'Dog',    date: '2026-05-01', status: 'Pending'  },
+  { id: '#1034', pet: 'Cleo',  species: 'Rabbit', date: '2026-05-04', status: 'Rejected' },
+];
+
+const saved: SavedPet[] = [
+  { name: 'Charlie', breed: 'Beagle',          age: '2 yrs', location: 'New York'    },
+  { name: 'Bella',   breed: 'Persian Cat',      age: '3 yrs', location: 'Los Angeles' },
+  { name: 'Rocky',   breed: 'German Shepherd',  age: '4 yrs', location: 'Chicago'     },
+  { name: 'Daisy',   breed: 'Golden Retriever', age: '1 yr',  location: 'Houston'     },
+  { name: 'Oliver',  breed: 'Siamese Cat',      age: '2 yrs', location: 'Phoenix'     },
+];
+
+const stats = [
+  { icon: '🐾', label: 'Total Applications', value: '4', sub: 'Submitted adoption requests' },
+  { icon: '✅', label: 'Approved',            value: '2', sub: 'Successfully adopted pets'   },
+  { icon: '⏳', label: 'Pending',             value: '1', sub: 'Applications under review'   },
+  { icon: '❤️', label: 'Saved Pets',          value: '5', sub: 'Pets saved to your wishlist' },
+];
+
+const tinyBtn =
+  'px-2.5 py-1 text-xs rounded-[6px] font-bold text-white bg-brand-primary ' +
+  'border-none cursor-pointer transition-all duration-300 ' +
+  'hover:bg-brand-secondary hover:-translate-y-0.5';
+
 export default function Dashboard() {
-  const applications: Application[] = [
-    { id: '#1021', pet: 'Buddy', species: 'Dog',    date: '2026-04-10', status: 'Approved' },
-    { id: '#1022', pet: 'Luna',  species: 'Cat',    date: '2026-04-18', status: 'Approved' },
-    { id: '#1031', pet: 'Max',   species: 'Dog',    date: '2026-05-01', status: 'Pending'  },
-    { id: '#1034', pet: 'Cleo',  species: 'Rabbit', date: '2026-05-04', status: 'Rejected' },
-  ];
-
-  const saved: SavedPet[] = [
-    { name: 'Charlie', breed: 'Beagle',          age: '2 yrs', location: 'New York'    },
-    { name: 'Bella',   breed: 'Persian Cat',      age: '3 yrs', location: 'Los Angeles' },
-    { name: 'Rocky',   breed: 'German Shepherd',  age: '4 yrs', location: 'Chicago'     },
-    { name: 'Daisy',   breed: 'Golden Retriever', age: '1 yr',  location: 'Houston'     },
-    { name: 'Oliver',  breed: 'Siamese Cat',      age: '2 yrs', location: 'Phoenix'     },
-  ];
-
-  const stats = [
-    { icon: '🐾', label: 'Total Applications', value: '4', sub: 'Submitted adoption requests' },
-    { icon: '✅', label: 'Approved',            value: '2', sub: 'Successfully adopted pets'   },
-    { icon: '⏳', label: 'Pending',             value: '1', sub: 'Applications under review'   },
-    { icon: '❤️', label: 'Saved Pets',          value: '5', sub: 'Pets saved to your wishlist' },
-  ];
-
-  const tinyBtn =
-    'px-2.5 py-1 text-xs rounded-[6px] font-bold text-white bg-brand-primary ' +
-    'border-none cursor-pointer transition-all duration-300 ' +
-    'hover:bg-brand-secondary hover:-translate-y-0.5';
-
   return (
     <section className="px-9 py-10 min-h-[calc(100vh-160px)] max-sm:px-4 max-sm:py-6">
 
@@ -75,6 +75,7 @@ export default function Dashboard() {
         Welcome back! Here is a summary of your adoption activity.
       </p>
 
+      {/* Stats cards */}
       <div className="flex flex-wrap justify-center gap-6 my-8 max-sm:flex-col max-sm:items-center">
         {stats.map(s => (
           <InfoCard key={s.label}>
@@ -85,6 +86,7 @@ export default function Dashboard() {
         ))}
       </div>
 
+      {/* Applications table */}
       <h2 className="text-2xl max-sm:text-xl font-bold mt-8 mb-2 text-primary">
         My Adoption Applications
       </h2>
@@ -115,6 +117,7 @@ export default function Dashboard() {
         </table>
       </div>
 
+      {/* Saved pets table */}
       <h2 className="text-2xl max-sm:text-xl font-bold mt-8 mb-2 text-primary">
         Saved Pets
       </h2>
